@@ -16,6 +16,7 @@ struct QueryResponse {
     answer: String,
     sources: Vec<String>,
     confidence: f32,
+    explanation: String, // Add explanation for debugging
 }
 
 pub async fn run_server(port: u16) -> Result<()> {
@@ -45,11 +46,22 @@ pub async fn run_server(port: u16) -> Result<()> {
             
             async move {
                 // Process query using RAG pipeline
-                let relevant_endpoints = rag_pipeline.find_relevant_endpoints(&request.query);
-                let context = rag_pipeline.format_context(relevant_endpoints);
+                let matches = rag_pipeline.find_relevant_endpoints(&request.query);
+                let (context, max_score) = rag_pipeline.format_context(matches.clone());
                 
+                println!("Query: '{}'", request.query);
+                println!("Found {} relevant endpoints", matches.len());
+                println!("Max relevance score: {:.2}", max_score);
                 println!("Context length: {} characters", context.len());
-                println!("Query: {}", request.query);
+                
+                // Calculate dynamic confidence
+                let confidence = rag_pipeline.calculate_confidence(&request.query, &context, &matches);
+                
+                let mut explanation = format!("Found {} relevant endpoints. ", matches.len());
+                if !matches.is_empty() {
+                    explanation.push_str(&format!("Best match: '{}' with score {:.2}. ", matches[0].0.name, matches[0].1));
+                }
+                explanation.push_str(&format!("Overall confidence: {:.2}", confidence));
                 
                 // Use Groq to generate answer from context
                 let answer = if context.trim().is_empty() {
@@ -69,7 +81,8 @@ pub async fn run_server(port: u16) -> Result<()> {
                 Ok::<_, warp::Rejection>(warp::reply::json(&QueryResponse {
                     answer,
                     sources,
-                    confidence: 0.8,
+                    confidence,
+                    explanation,
                 }))
             }
         });
@@ -81,8 +94,9 @@ pub async fn run_server(port: u16) -> Result<()> {
     let debug_route = warp::path("debug")
         .and(warp::get())
         .map(move || {
-            let endpoints_count = rag_pipeline.documentation.endpoints.len();
-            let endpoint_names: Vec<String> = rag_pipeline.documentation.endpoints
+            let documentation = rag_pipeline.get_documentation();
+            let endpoints_count = documentation.endpoints.len();
+            let endpoint_names: Vec<String> = documentation.endpoints
                 .iter()
                 .map(|e| e.name.clone())
                 .collect();
@@ -90,7 +104,7 @@ pub async fn run_server(port: u16) -> Result<()> {
             warp::reply::json(&serde_json::json!({
                 "total_endpoints": endpoints_count,
                 "endpoints": endpoint_names,
-                "sample_endpoint": &rag_pipeline.documentation.endpoints.get(0)
+                "sample_endpoint": &documentation.endpoints.get(0)
             }))
         });
     

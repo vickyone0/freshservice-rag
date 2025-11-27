@@ -2,74 +2,986 @@
   "base_url": "https://api.freshservice.com",
   "endpoints": [
     {
-      "name": "Create Ticket",
-      "description": "Create a new ticket in Freshservice",
-      "method": "POST",
-      "path": "/api/v2/tickets",
+      "name": "View a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "View a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "GET",
+      "path": "/api/v2/tickets/20",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X GET 'https://domain.freshservice.com/api/v2/tickets/20'"
+    },
+    {
+      "name": "Filter Tickets Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Filter Tickets Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "GET",
+      "path": "/api/v2/tickets/filter",
       "parameters": [
         {
-          "name": "subject",
+          "name": "workspace_id",
+          "param_type": "workspace id of the ticket. this attribute is applicable only to accounts with workspaces. the value 0 for workspace_id will return tickets from all workspaces, with only global level fields.",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "requester_id",
+          "param_type": "user id of the requester",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "email",
+          "param_type": "email address of the requester",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "agent_id",
+          "param_type": "id of the agent to whom the ticket has been assigned",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "group_id",
+          "param_type": "id of the group to which the ticket has been assigned",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "priority",
+          "param_type": "priority of the ticket",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "param_type": "status of the ticket",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "impact",
+          "param_type": "ticket impact",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "urgency",
+          "param_type": "ticket urgency",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "tag",
+          "param_type": "tag that has been associated to the tickets",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "due_by",
+          "param_type": "date (yyyy-mm-dd) when the ticket is due to be resolved",
+          "description": "date",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "fr_due_by",
+          "param_type": "date (yyyy-mm-dd) when the first response is due",
+          "description": "date",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "param_type": "ticket creation date (yyyy-mm-ddthh:mm:ssz)",
+          "description": "date",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "updated_at",
+          "param_type": "ticket update date (yyyy-mm-ddthh:mm:ssz)",
+          "description": "date",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "Number",
+          "param_type": "integer",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "Checkbox",
+          "param_type": "boolean",
+          "description": "boolean",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "Dropdown",
           "param_type": "string",
-          "description": "Subject of the ticket",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "Date",
+          "param_type": "string",
+          "description": "date(YYYY-MM-DD)",
+          "required": false,
+          "default": null
+        }
+      ],
+      "curl_example": "1curl -v -u api_key:X -X GET 'https://domain.freshservice.com/api/v2/tickets/filter?query=\"priority:3\"'"
+    },
+    {
+      "name": "View List of Tickets Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "View List of Tickets Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "GET",
+      "path": "/api/v2/tickets",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -X GET 'https://domain.freshservice.com/api/v2/tickets'"
+    },
+    {
+      "name": "Update a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Update a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "PUT",
+      "path": "/api/v2/tickets/1",
+      "parameters": [
+        {
+          "name": "bypass_mandatory",
+          "param_type": "string",
+          "description": "To bypass mandatory fields check while updating the ticket except for requester_id, source. Any business rules trying to mandate certain fields will also be bypassed. All fields configured as mandatory upon closing or resolving the ticket will be skipped while updating the ticket. This can only be passed by an admin. Example: api/v2/ticket/{ticket_id}?bypass_mandatory=true",
           "required": true,
+          "default": null
+        }
+      ],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X PUT -d '{ \"priority\": 3 }' 'https://domain.freshservice.com/api/v2/tickets/1'"
+    },
+    {
+      "name": "Move a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Move a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "PUT",
+      "path": "/api/v2/tickets/1/move_workspace",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -X PUT -d '{ \"workspace_id\": 3, \"group_id\": 3, \"responder_id\": 4 }' 'https://domain.freshservice.com/api/v2/tickets/1/move_workspace'"
+    },
+    {
+      "name": "Delete a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Delete a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "DELETE",
+      "path": "/api/v2/tickets/1",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -X DELETE 'https://domain.freshservice.com/api/v2/tickets/1'"
+    },
+    {
+      "name": "Delete a Ticket Attachment Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Delete a Ticket Attachment Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "DELETE",
+      "path": "/api/v2/tickets/1/attachments/1",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -X DELETE 'https://domain.freshservice.com/api/v2/tickets/1/attachments/1'"
+    },
+    {
+      "name": "Restore a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Restore a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "PUT",
+      "path": "/api/v2/tickets/1/restore",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X PUT -d '' 'https://domain.freshservice.com/api/v2/tickets/1/restore'"
+    },
+    {
+      "name": "Create a Child Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Create a Child Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "POST",
+      "path": "/api/v2/tickets/20/create_child_ticket",
+      "parameters": [
+        {
+          "name": "workspace_id",
+          "param_type": "freshservice/freshservice for business teams: id of the workspace that the ticket belongs to. if not provided, the id of the primary workspace will be defaulted. applicable only to accounts with workspaces. freshservice for msps: workspace_id refers to the client’s id. if not provided for an existing contact, the system will default to the contact's associated client id. for a new contact, the client is determined based on the contact's email domain.",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "name",
+          "param_type": "name of the requester",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "requester_id *",
+          "param_type": "for existing contacts/requester, the requester_id can be passed instead of requester's email. freshservice/freshservice for business teams: user id of the requester. freshservice for msps: user id of the contact.",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "email *",
+          "param_type": "email address of the requester. if no contact exists with this email address in freshservice, it will be added as a new contact.",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "phone *",
+          "param_type": "phone number of the requester. if no contact exists with this phone number in freshservice, it will be added as a new contact. if the phone number is set and the email address is not, then the name attribute is mandatory.",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "subject",
+          "param_type": "subject of the ticket. the default value is null.",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "type",
+          "param_type": "helps categorize the ticket according to the different kinds of issues your support team deals with. the default value is incident. * as of now, api v2 supports only type ‘incident’",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "status *",
+          "param_type": "status of the ticket.",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "priority *",
+          "param_type": "priority of the ticket.",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "description",
+          "param_type": "html content of the ticket.",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "responder_id",
+          "param_type": "id of the agent to whom the ticket has been assigned",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "attachments",
+          "param_type": "ticket attachments. the total size of these attachments cannot exceed 40 mb.",
+          "description": "array of objects",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "cc_emails",
+          "param_type": "email address added in the 'cc' field of the incoming ticket email.",
+          "description": "array of strings",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "custom_fields",
+          "param_type": "key value pairs containing the names and values of custom fields. read more here.",
+          "description": "dictionary",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "due_by",
+          "param_type": "timestamp that denotes when the ticket is due to be resolved.",
+          "description": "datetime",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "email_config_id",
+          "param_type": "id of email config which is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com)",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "fr_due_by",
+          "param_type": "timestamp that denotes when the first response is due",
+          "description": "datetime",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "group_id",
+          "param_type": "id of the group to which the ticket has been assigned. the default value is the id of the group that is associated with the given email_config_id",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "source *",
+          "param_type": "the channel through which the ticket was created. the default value is 2.",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "tags",
+          "param_type": "tags that have been associated with the ticket",
+          "description": "array of strings",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "department_id",
+          "param_type": "department id of the requester.",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "category",
+          "param_type": "ticket category",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "sub_category",
+          "param_type": "ticket sub category",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "item_category",
+          "param_type": "ticket item category",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "associate_ci",
+          "param_type": "search for asset and associate with ticket",
+          "description": "hash",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "urgency",
+          "param_type": "ticket urgency",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "impact",
+          "param_type": "ticket impact",
+          "description": "number",
+          "required": false,
+          "default": null
+        }
+      ],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{ \"description\": \"Details about the issue...\", \"subject\": \"Support Needed...\", \"email\": \"tom@outerspace.com\", \"priority\": 1, \"status\": 2, \"cc_emails\": [\"ram@freshservice.com\",\"diana@freshservice.com\"], \"workspace_id\": 3 }' -X POST 'https://domain.freshservice.com/api/v2/tickets/20/create_child_ticket'"
+    },
+    {
+      "name": "List all Ticket Fields Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "List all Ticket Fields Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "GET",
+      "path": "/api/v2/ticket_form_fields",
+      "parameters": [
+        {
+          "name": "id",
+          "param_type": "string",
+          "description": "Unique ID of the Field",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "workspace_id",
+          "param_type": "string",
+          "description": "Freshservice/Freshservice for Business Teams: ID of the workspace that the ticket belongs to. If not provided, the ID of the primary workspace will be defaulted. Applicable only to accounts with workspaces. Freshservice for MSPs: workspace_id refers to the client’s ID. If not provided for an existing contact, the system will default to the contact's associated client ID. For a new contact, the client is determined based on the contact's email domain.",
+          "required": false,
+          "default": "to"
+        },
+        {
+          "name": "created_at",
+          "param_type": "string",
+          "description": "Date time at which the field was added",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "updated_at",
+          "param_type": "string",
+          "description": "Date time at which the field was modified",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "name",
+          "param_type": "string",
+          "description": "Name of the field",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "label",
+          "param_type": "string",
+          "description": "Label of the field for display",
+          "required": false,
           "default": null
         },
         {
           "name": "description",
           "param_type": "string",
-          "description": "HTML content of the ticket",
+          "description": "Description of the field",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "field_type",
+          "param_type": "string",
+          "description": "Indicates if the field is a checkbox, dropdown, text field",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "required",
+          "param_type": "string",
+          "description": "True if the field is marked mandatory",
           "required": true,
           "default": null
         },
         {
-          "name": "email",
+          "name": "required_for_closure",
           "param_type": "string",
-          "description": "Email address of the requester",
+          "description": "True if the field is marked mandatory while closing the Release item",
           "required": true,
+          "default": null
+        },
+        {
+          "name": "default_field",
+          "param_type": "string",
+          "description": "True if the field is a default field. False if customm",
+          "required": false,
+          "default": "field"
+        },
+        {
+          "name": "choices",
+          "param_type": "string",
+          "description": "List of values supported by the field",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "nested_fields",
+          "param_type": "string",
+          "description": "contain details of nested fields",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "required_for_agents",
+          "param_type": "string",
+          "description": "Set to true if the field is mandatory for Agents",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "required_for_customers",
+          "param_type": "string",
+          "description": "Set to true if the field is mandatory in the customer portal",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "label_for_customers",
+          "param_type": "string",
+          "description": "Display name for the field (as seen in the customer portal)",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "customers_can_edit",
+          "param_type": "string",
+          "description": "Set to true if the field can be updated by customers",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "displayed_to_customers",
+          "param_type": "string",
+          "description": "Set to true if the field is displayed in the customer portal",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "portal_cc",
+          "param_type": "string",
+          "description": "Applicable only for the requester field. Set to true if customer can add additional requesters to a ticket",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "portal_cc_to",
+          "param_type": "string",
+          "description": "Applicable only if portal_cc is set to true. Value will be all when a customer can add any requester to the CC list and company when a customer can add only company contacts to the CC list",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "date_only",
+          "param_type": "string",
+          "description": "Applicable only for custom_date field. When ‘Request time information’ is selected, the field date_only returns false and if unchecked, date_only returns true",
+          "required": false,
           "default": null
         }
       ],
-      "curl_example": "curl -v -u yourapikey:X -H \"Content-Type: application/json\" -d '{\"subject\":\"Ticket Title\",\"description\":\"<h2>Ticket content</h2>\",\"email\":\"user@example.com\"}' -X POST \"https://domain.freshservice.com/api/v2/tickets\""
+      "curl_example": "1curl -v -u api_key:X -X GET 'https://domain.freshservice.com/api/v2/ticket_form_fields'"
     },
     {
-      "name": "Get Ticket",
-      "description": "Retrieve a specific ticket by ID",
+      "name": "Get Ticket Activity Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Get Ticket Activity Freshservice Freshservice for Business Teams Freshservice for MSPs",
       "method": "GET",
-      "path": "/api/v2/tickets/{id}",
+      "path": "/api/v2/tickets/152/activities",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X GET 'https://domain.freshservice.com/api/v2/tickets/152/activities'"
+    },
+    {
+      "name": "Create a Time Entry Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Create a Time Entry Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "POST",
+      "path": "/api/v2/tickets/1/time_entries",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{\"time_entry\":{\"note\":\"test_entry\",\"time_spent\":\"03:00\",\"agent_id\":1}}' -X POST 'https://domain.freshservice.com/api/v2/tickets/1/time_entries'"
+    },
+    {
+      "name": "View a Time Entry Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "View a Time Entry Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "GET",
+      "path": "/api/v2/tickets/1/time_entries/20",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X GET 'https://domain.freshservice.com/api/v2/tickets/1/time_entries/20'"
+    },
+    {
+      "name": "List all Time Entries of a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "List all Time Entries of a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "GET",
+      "path": "/api/v2/tickets/1/time_entries",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X GET 'https://domain.freshservice.com/api/v2/tickets/1/time_entries'"
+    },
+    {
+      "name": "Update a Time Entry Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Update a Time Entry Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "PUT",
+      "path": "/api/v2/tickets/1/time_entries/20",
       "parameters": [
         {
           "name": "id",
-          "param_type": "integer",
-          "description": "Ticket ID",
-          "required": true,
+          "param_type": "id of the time entry read-only",
+          "description": "Number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "workspace_id",
+          "param_type": "workspace id of the time entry(inherited from the ticket). this attribute is applicable only to accounts with workspaces. read-only",
+          "description": "Number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "param_type": "time at which this time-entry is created read-only",
+          "description": "DateTime",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "updated_at",
+          "param_type": "time at which this time-entry is updated read-only",
+          "description": "DateTime",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "start_time",
+          "param_type": "the time at which the time-entry is added. if a timer, which is in stopped state, is started again, date_time at which the timer is started again read-only",
+          "description": "DateTime",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "timer_running",
+          "param_type": "cannot update timer_running to the same existing value.",
+          "description": "Boolean",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "billable",
+          "param_type": "can be set to true or false",
+          "description": "Boolean",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "time_spent",
+          "param_type": "the total amount of time spent by the timer in hh::mm format.",
+          "description": "String",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "executed_at",
+          "param_type": "time at which the timer is executed. default value (unless given in request) is the time at which timer is added. should be less than or equal to current date_time.",
+          "description": "DateTime",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "task_id",
+          "param_type": "id of the task assigned to the time-entry. task should be valid on the given ticket and should be assigned to the agent_id",
+          "description": "Number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "note",
+          "param_type": "description of the time-entry",
+          "description": "String",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "agent_id",
+          "param_type": "the user/agent to whom this time-entry is to be assigned mandatory",
+          "description": "Number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "end_time",
+          "param_type": "time when the time entry ends. supported for freshservice msps only.",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "work_type",
+          "param_type": "category of work for the time entry. supported for freshservice msps only.",
+          "description": "string",
+          "required": false,
           "default": null
         }
       ],
-      "curl_example": "curl -v -u yourapikey:X -X GET \"https://domain.freshservice.com/api/v2/tickets/1\""
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X PUT -d '{\"time_entry\":{\"note\":\"text_update\",\"agent_id\":1}}' 'https://domain.freshservice.com/api/v2/tickets/1/time_entries/20'"
     },
     {
-      "name": "List Tickets",
-      "description": "Get a list of all tickets with optional filtering",
-      "method": "GET",
-      "path": "/api/v2/tickets",
+      "name": "Delete a Time Entry Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Delete a Time Entry Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "DELETE",
+      "path": "/api/v2/tickets/1/time_entries/20",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X DELETE 'https://domain.freshservice.com/api/v2/tickets/1/time_entries/20'"
+    },
+    {
+      "name": "Create a Source Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Create a Source Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "POST",
+      "path": "/api/v2/ticket_fields/sources",
       "parameters": [
         {
-          "name": "page",
-          "param_type": "integer",
-          "description": "Page number for pagination",
+          "name": "name",
+          "param_type": "name of the source",
+          "description": "string",
           "required": false,
-          "default": "1"
-        },
-        {
-          "name": "per_page",
-          "param_type": "integer",
-          "description": "Number of records per page",
-          "required": false,
-          "default": "30"
+          "default": null
         }
       ],
-      "curl_example": "curl -v -u yourapikey:X -X GET \"https://domain.freshservice.com/api/v2/tickets?page=1&per_page=30\""
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{ \"name\": \"Source Name\" }' -X POST 'https://domain.freshservice.com/api/v2/ticket_fields/sources'"
+    },
+    {
+      "name": "Request Approval for a Service Request Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "description": "Request Approval for a Service Request Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "method": "POST",
+      "path": "/api/v2/tickets/20/approvals",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{\"approver_id\":1001948400, \"approval_type\": 2,\"email_content\": \"Your approval email body goes here.\"}' -X POST 'https://domain.freshservice.com/api/v2/tickets/20/approvals'"
+    },
+    {
+      "name": "List all Ticket Approvals Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "description": "List all Ticket Approvals Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "method": "GET",
+      "path": "/api/v2/tickets/20/approvals",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -X GET 'https://domain.freshservice.com/api/v2/tickets/20/approvals'"
+    },
+    {
+      "name": "View an Approval Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "description": "View an Approval Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "method": "GET",
+      "path": "/api/v2/tickets/20/approvals/7163764235",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -X GET 'https://domain.freshservice.com/api/v2/tickets/20/approvals/7163764235'"
+    },
+    {
+      "name": "Send Reminder for an Approval Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "description": "Send Reminder for an Approval Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "method": "PUT",
+      "path": "/api/v2/tickets/20/approvals/7163764235/remind",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '' -X PUT 'https://domain.freshservice.com/api/v2/tickets/20/approvals/7163764235/remind'"
+    },
+    {
+      "name": "Cancel an approval Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "description": "Cancel an approval Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "method": "PUT",
+      "path": "/api/v2/tickets/20/approvals/5463702131",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{ \"approval_status\":{ \"id\":3 }}' -X PUT 'https://domain.freshservice.com/api/v2/tickets/20/approvals/5463702131'"
+    },
+    {
+      "name": "List all Ticket Approval Groups Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "description": "List all Ticket Approval Groups Freshservice Freshservice for MSPs Freshservice for Business Teams",
+      "method": "GET",
+      "path": "/api/v2/tickets/25/approval-groups",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -X GET 'https://domain.freshservice.com/api/v2/tickets/25/approval-groups'"
+    },
+    {
+      "name": "Create a Task Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Create a Task Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "POST",
+      "path": "/api/v2/tickets/1/tasks",
+      "parameters": [
+        {
+          "name": "workspace_id",
+          "param_type": "freshservice/freshservice for business teams: id of the workspace that the ticket belongs to. if not provided, the id of the primary workspace will be defaulted. applicable only to accounts with workspaces. freshservice for msps: workspace_id refers to the client’s id. if not provided for an existing contact, the system will default to the contact's associated client id. for a new contact, the client is determined based on the contact's email domain.",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "agent_id",
+          "param_type": "id of the agent to whom the task is assigned",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "param_type": "status of the task, 1-open, 2-in progress, 3-completed",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "due_date",
+          "param_type": "due date of the task",
+          "description": "datetime",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "notify_before",
+          "param_type": "time in seconds before which notification is sent prior to due date",
+          "description": "number",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "title",
+          "param_type": "title of the task",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "description",
+          "param_type": "description of the task",
+          "description": "string",
+          "required": false,
+          "default": null
+        },
+        {
+          "name": "group_id",
+          "param_type": "unique id of the group to which the task is assigned",
+          "description": "number",
+          "required": false,
+          "default": null
+        }
+      ],
+      "curl_example": "1234567curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{\n  \"due_date\": \"2020-04-03T10:26:13.067Z\",\n  \"notify_before\": 0,\n  \"title\": \"Supply lightsabers to all the Jedis\",\n  \"description\": \"We need to re-supply to win the war!\",\n  \"workspace_id\": 3\n}' -X POST 'https://domain.freshservice.com/api/v2/tickets/1/tasks'"
+    },
+    {
+      "name": "View a Task Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "View a Task Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "GET",
+      "path": "/api/v2/tickets/1/tasks/1",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X GET 'https://domain.freshservice.com/api/v2/tickets/1/tasks/1'"
+    },
+    {
+      "name": "View all Tasks Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "View all Tasks Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "GET",
+      "path": "/api/v2/tickets/1/tasks",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -X GET 'https://domain.freshservice.com/api/v2/tickets/1/tasks'"
+    },
+    {
+      "name": "Update a Task Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Update a Task Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "PUT",
+      "path": "/api/v2/tickets/1/tasks/1",
+      "parameters": [],
+      "curl_example": "1234567curl -v -u api_key:X -H \"Content-Type: application/json\" -X PUT -d '{\n  \"status\": 3,\n  \"notify_before\": 0,\n  \"title\": \"Supply lightsabers to all the Jedis\",\n  \"description\": \"We need to re-supply to win the war!\",\n  \"workspace_id\": 2\n}' 'https://domain.freshservice.com/api/v2/tickets/1/tasks/1'"
+    },
+    {
+      "name": "Delete a Task Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "description": "Delete a Task Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "DELETE",
+      "path": "/api/v2/tickets/1/tasks/1",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -X DELETE 'https://domain.freshservice.com/api/v2/tickets/1/tasks/1'"
+    },
+    {
+      "name": "View Onboarding Tickets Freshservice",
+      "description": "View Onboarding Tickets Freshservice",
+      "method": "GET",
+      "path": "/api/v2/onboarding_requests/id/tickets",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -X GET 'https://domain.freshservice.com/api/v2/onboarding_requests/id/tickets'"
+    },
+    {
+      "name": "View Offboarding Tickets Freshservice",
+      "description": "View Offboarding Tickets Freshservice",
+      "method": "GET",
+      "path": "/api/v2/offboarding_requests/id/tickets",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -X GET 'https://domain.freshservice.com/api/v2/offboarding_requests/id/tickets'"
+    },
+    {
+      "name": "POST /api/v2/tickets",
+      "description": "Create a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "POST",
+      "path": "/api/v2/tickets",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{ \"description\": \"Details about the issue...\", \"subject\": \"Support Needed...\", \"email\": \"tom@outerspace.com\", \"priority\": 1, \"status\": 2, \"cc_emails\": [\"ram@freshservice.com\",\"diana@freshservice.com\"], \"custom_fields\" : { \"custom_text\" : \"This is a custom text box\" }, \"workspace_id\": 3 }' -X POST 'https://domain.freshservice.com/api/v2/tickets'"
+    },
+    {
+      "name": "PUT /api/v2/tickets/51",
+      "description": "Update a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "PUT",
+      "path": "/api/v2/tickets/51",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X  -F 'attachments[]=@/Users/user/Desktop/api2.png' -F 'priority=1' -X PUT 'https://domain.freshservice.com/api/v2/tickets/51'"
+    },
+    {
+      "name": "PUT /api/v2/tickets/36",
+      "description": "Update a Ticket Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "PUT",
+      "path": "/api/v2/tickets/36",
+      "parameters": [],
+      "curl_example": "1curl -v \\ -u api_key:X \\ -H \"Content-Type: application/json\" \\ -X PUT \\ -d '{ \"custom_fields\": { \"major_incident_type\": \"Partial outage\", \"business_impact\": \"test\", \"impacted_locations\": \"test\", \"no_of_customers_impacted\": \"2\" } }' \\'https://domain.freshservice.com/api/v2/tickets/36'"
+    },
+    {
+      "name": "GET /api/v2/tickets/",
+      "description": "Get Ticket Activity Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "GET",
+      "path": "/api/v2/tickets/",
+      "parameters": [],
+      "curl_example": "1 curl -v -u api_key:X -X GET 'https://domain.freshservice.com/api/v2/tickets/[id]/activities?start_token=token_id'"
+    },
+    {
+      "name": "GET /api/v2/tickets/1/requested_items",
+      "description": "View Req Items Of Sr",
+      "method": "GET",
+      "path": "/api/v2/tickets/1/requested_items",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X GET 'https://domain.freshservice.com/api/v2/tickets/1/requested_items'"
+    },
+    {
+      "name": "PUT /api/v2/tickets/1/requested_items/1",
+      "description": "Update Req Items Of Sr",
+      "method": "PUT",
+      "path": "/api/v2/tickets/1/requested_items/1",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X PUT -d '{\"quantity\":2, \"stage\":2, \"custom_fields\":{\"additional_property_1\": \"value1\"}}' 'https://domain.freshservice.com/api/v2/tickets/1/requested_items/1'"
+    },
+    {
+      "name": "POST /api/v2/tickets/20/approval-groups",
+      "description": "Create Approval Groups",
+      "method": "POST",
+      "path": "/api/v2/tickets/20/approval-groups",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{\"name\": \"HR Team Approval Group\", \"approval_type\": 2, \"email_content\": \"Your approval email body goes here.\", \"approver_ids\": [1001948400, 1001948403]}' -X POST 'https://domain.freshservice.com/api/v2/tickets/20/approval-groups'"
+    },
+    {
+      "name": "PUT /api/v2/tickets/20/approval-groups/3453761234",
+      "description": "Update Approval Groups",
+      "method": "PUT",
+      "path": "/api/v2/tickets/20/approval-groups/3453761234",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{\"name\": \"Finance Team Approval Group\", \"approval_type\": 1, \"email_content\": \"Email Content\", \"approver_ids\": [1001948404]}' -X PUT 'https://domain.freshservice.com/api/v2/tickets/20/approval-groups/3453761234'"
+    },
+    {
+      "name": "PUT /api/v2/tickets/20/approval-groups/7163761234",
+      "description": "Cancel Approval Groups",
+      "method": "PUT",
+      "path": "/api/v2/tickets/20/approval-groups/7163761234",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{\"approval_status\": 3}' -X PUT 'https://domain.freshservice.com/api/v2/tickets/20/approval-groups/7163761234'"
+    },
+    {
+      "name": "PUT /api/v2/tickets/20/approval-chain-rule",
+      "description": "Update Service Request Approval Chain Rule",
+      "method": "PUT",
+      "path": "/api/v2/tickets/20/approval-chain-rule",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{\"rule\": 1}' -X PUT 'https://domain.freshservice.com/api/v2/tickets/20/approval-chain-rule'"
+    },
+    {
+      "name": "PUT /api/v2/tickets/2/promote",
+      "description": "Promote an incident to a major incident Freshservice",
+      "method": "PUT",
+      "path": "/api/v2/tickets/2/promote",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{ \"type\": \"Major Incident\" }' -X PUT 'https://domain.freshservice.com/api/v2/tickets/2/promote'"
+    },
+    {
+      "name": "PUT /api/v2/tickets/2/demote",
+      "description": "Demote an incident from a major incident Freshservice",
+      "method": "PUT",
+      "path": "/api/v2/tickets/2/demote",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -d '{ \"type\": \"Incident\" }' -X PUT 'https://domain.freshservice.com/api/v2/tickets/2/demote'"
+    },
+    {
+      "name": "GET /api/v2/tickets/1/csat_response",
+      "description": "CSAT Response Freshservice Freshservice for Business Teams Freshservice for MSPs",
+      "method": "GET",
+      "path": "/api/v2/tickets/1/csat_response",
+      "parameters": [],
+      "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X GET 'https://domain.freshservice.com/api/v2/tickets/1/csat_response'"
     }
   ],
-  "scraped_at": "2025-11-27T19:25:14.768529018Z"
+  "scraped_at": "2025-11-27T20:53:48.967515687Z"
 }

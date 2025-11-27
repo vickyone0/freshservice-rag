@@ -39,6 +39,7 @@ async fn main() -> Result<()> {
         Commands::Scrape { output } => {
             println!("Scraping Freshservice API documentation...");
             let scraper = scraper::FreshserviceScraper::new();
+            scraper.debug_html_structure().await?;
             let documentation = scraper.scrape_ticket_attributes().await?;
             
             // Save scraped data

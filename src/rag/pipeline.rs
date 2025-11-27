@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 #[derive(Clone)]
 pub struct RagPipeline {
-    pub documentation: ScrapedDocumentation,
+    documentation: ScrapedDocumentation,
     embeddings: HashMap<String, Vec<f32>>,
 }
 
@@ -15,7 +15,7 @@ impl RagPipeline {
         }
     }
     
-    pub fn find_relevant_endpoints(&self, query: &str) -> Vec<&ApiEndpoint> {
+    pub fn find_relevant_endpoints(&self, query: &str) -> Vec<(&ApiEndpoint, f32)> {
         let query_lower = query.to_lowercase();
         let mut matches = Vec::new();
         
@@ -23,16 +23,12 @@ impl RagPipeline {
             let score = self.calculate_relevance_score(endpoint, &query_lower);
             
             if score > 0.1 {
-                matches.push(endpoint);
+                matches.push((endpoint, score));
             }
         }
         
-        // Sort by relevance
-        matches.sort_by(|a, b| {
-            let score_a = self.calculate_relevance_score(a, &query_lower);
-            let score_b = self.calculate_relevance_score(b, &query_lower);
-            score_b.partial_cmp(&score_a).unwrap()
-        });
+        // Sort by relevance score (descending)
+        matches.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
         
         matches
     }
@@ -40,7 +36,7 @@ impl RagPipeline {
     fn calculate_relevance_score(&self, endpoint: &ApiEndpoint, query: &str) -> f32 {
         let query_lower = query.to_lowercase();
         let query_words: Vec<&str> = query_lower.split_whitespace().collect();
-        let mut score = 0.0;
+        let mut score:f32 = 0.0;
 
         // Check name (highest weight)
         let name_lower = endpoint.name.to_lowercase();
@@ -104,13 +100,16 @@ impl RagPipeline {
             score += 0.6;
         }
 
-        score
+        // Normalize score to be between 0 and 1
+        score.min(5.0) / 5.0
     }
     
-    pub fn format_context(&self, endpoints: Vec<&ApiEndpoint>) -> String {
+    pub fn format_context(&self, matches: Vec<(&ApiEndpoint, f32)>) -> (String, f32) {
         let mut context = String::new();
+        let mut overall_confidence: f32 = 0.0;
         
-        for endpoint in endpoints {
+        for (endpoint, score) in matches {
+            context.push_str(&format!("[Relevance: {:.2}] ", score));
             context.push_str(&format!("Endpoint: {} ({})\n", endpoint.name, endpoint.method));
             context.push_str(&format!("Description: {}\n", endpoint.description));
             context.push_str(&format!("Path: {}\n", endpoint.path));
@@ -131,8 +130,100 @@ impl RagPipeline {
             }
             
             context.push_str("\n---\n\n");
+            
+            // Update overall confidence (weighted average)
+            overall_confidence = overall_confidence.max(score);
         }
         
-        context
+        (context, overall_confidence)
+    }
+    
+    // New method to calculate confidence based on query quality and context match
+    pub fn calculate_confidence(&self, query: &str, context: &str, matches: &[(&ApiEndpoint, f32)]) -> f32 {
+        if matches.is_empty() {
+            return 0.1; // Very low confidence when no matches found
+        }
+        
+        let max_match_score = matches.iter().map(|(_, score)| score).fold(0.0f32, |a: f32, &b| a.max(b));
+        
+        // Factor in query quality
+        let query_quality = self.assess_query_quality(query);
+        
+        // Factor in context richness
+        let context_richness = self.assess_context_richness(context);
+        
+        // Combine factors
+        let confidence = (max_match_score * 0.6) + (query_quality * 0.2) + (context_richness * 0.2);
+        
+        // Ensure confidence is between 0.1 and 1.0
+        confidence.max(0.1).min(1.0)
+    }
+    
+    fn assess_query_quality(&self, query: &str) -> f32 {
+        let query_lower = query.to_lowercase();
+        
+        // Check if query contains API-related terms
+        let api_terms = ["api", "endpoint", "method", "curl", "request", "ticket", "create", "get", "list", "update", "delete"];
+        let mut term_count = 0;
+        
+        for term in &api_terms {
+            if query_lower.contains(term) {
+                term_count += 1;
+            }
+        }
+        
+        // Check query length and specificity
+        let word_count = query_lower.split_whitespace().count();
+        
+        let specificity_score = if word_count >= 4 { 0.8 } else if word_count >= 2 { 0.5 } else { 0.2 };
+        let term_score = (term_count as f32 / api_terms.len() as f32).min(1.0);
+        
+        (specificity_score * 0.6 + term_score * 0.4).min(1.0)
+    }
+    
+    fn assess_context_richness(&self, context: &str) -> f32 {
+        if context.is_empty() {
+            return 0.0;
+        }
+        
+        let lines: Vec<&str> = context.lines().collect();
+        let non_empty_lines = lines.iter().filter(|line| !line.trim().is_empty()).count();
+        
+        // Check for presence of key sections
+        let has_parameters = context.contains("Parameters:");
+        let has_curl_example = context.contains("cURL Example:");
+        let has_multiple_endpoints = context.matches("Endpoint:").count() > 1;
+        
+        let mut richness: f32 = 0.0;
+        
+        // Base score from line count
+        if non_empty_lines >= 10 {
+            richness += 0.4;
+        } else if non_empty_lines >= 5 {
+            richness += 0.2;
+        } else {
+            richness += 0.1;
+        }
+        
+        // Bonus for having parameters
+        if has_parameters {
+            richness += 0.3;
+        }
+        
+        // Bonus for having curl examples
+        if has_curl_example {
+            richness += 0.2;
+        }
+        
+        // Bonus for multiple endpoints
+        if has_multiple_endpoints {
+            richness += 0.1;
+        }
+        
+        richness.min(1.0)
+    }
+    
+    pub fn get_documentation(&self) -> &ScrapedDocumentation {
+        &self.documentation
     }
 }
