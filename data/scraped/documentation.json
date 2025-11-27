@@ -115,7 +115,7 @@
         },
         {
           "name": "Number",
-          "param_type": "integer",
+          "param_type": "string",
           "description": "number",
           "required": false,
           "default": null
@@ -162,7 +162,7 @@
           "name": "bypass_mandatory",
           "param_type": "string",
           "description": "To bypass mandatory fields check while updating the ticket except for requester_id, source. Any business rules trying to mandate certain fields will also be bypassed. All fields configured as mandatory upon closing or resolving the ticket will be skipped while updating the ticket. This can only be passed by an admin. Example: api/v2/ticket/{ticket_id}?bypass_mandatory=true",
-          "required": true,
+          "required": false,
           "default": null
         }
       ],
@@ -416,7 +416,7 @@
           "param_type": "string",
           "description": "Freshservice/Freshservice for Business Teams: ID of the workspace that the ticket belongs to. If not provided, the ID of the primary workspace will be defaulted. Applicable only to accounts with workspaces. Freshservice for MSPs: workspace_id refers to the client’s ID. If not provided for an existing contact, the system will default to the contact's associated client ID. For a new contact, the client is determined based on the contact's email domain.",
           "required": false,
-          "default": "to"
+          "default": null
         },
         {
           "name": "created_at",
@@ -464,14 +464,14 @@
           "name": "required",
           "param_type": "string",
           "description": "True if the field is marked mandatory",
-          "required": true,
+          "required": false,
           "default": null
         },
         {
           "name": "required_for_closure",
           "param_type": "string",
           "description": "True if the field is marked mandatory while closing the Release item",
-          "required": true,
+          "required": false,
           "default": null
         },
         {
@@ -479,7 +479,7 @@
           "param_type": "string",
           "description": "True if the field is a default field. False if customm",
           "required": false,
-          "default": "field"
+          "default": null
         },
         {
           "name": "choices",
@@ -499,14 +499,14 @@
           "name": "required_for_agents",
           "param_type": "string",
           "description": "Set to true if the field is mandatory for Agents",
-          "required": true,
+          "required": false,
           "default": null
         },
         {
           "name": "required_for_customers",
           "param_type": "string",
           "description": "Set to true if the field is mandatory in the customer portal",
-          "required": true,
+          "required": false,
           "default": null
         },
         {
@@ -983,5 +983,5 @@
       "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X GET 'https://domain.freshservice.com/api/v2/tickets/1/csat_response'"
     }
   ],
-  "scraped_at": "2025-11-27T20:53:48.967515687Z"
+  "scraped_at": "2025-11-27T21:20:50.191113763Z"
 }

@@ -28,7 +28,6 @@ enum Commands {
         #[arg(short, long, default_value = "8080")]
         port: u16,
     },
-    Debug,
 }
 
 #[tokio::main]
@@ -39,7 +38,6 @@ async fn main() -> Result<()> {
         Commands::Scrape { output } => {
             println!("Scraping Freshservice API documentation...");
             let scraper = scraper::FreshserviceScraper::new();
-            scraper.debug_html_structure().await?;
             let documentation = scraper.scrape_ticket_attributes().await?;
             
             // Save scraped data
@@ -54,12 +52,8 @@ async fn main() -> Result<()> {
             println!("Starting web server on port {}...", port);
             web::run_server(port).await?;
         }
-        Commands::Debug => {
-    println!("Debugging Freshservice HTML structure...");
-    let scraper = scraper::FreshserviceScraper::new();
-    scraper.debug_html_structure().await?;
-}
     }
+       
 
     Ok(())
 }

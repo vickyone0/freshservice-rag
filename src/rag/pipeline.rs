@@ -1,17 +1,17 @@
 use crate::models::{ApiEndpoint, ScrapedDocumentation};
-use std::collections::HashMap;
+
 
 #[derive(Clone)]
 pub struct RagPipeline {
     documentation: ScrapedDocumentation,
-    embeddings: HashMap<String, Vec<f32>>,
+    
 }
 
 impl RagPipeline {
     pub fn new(documentation: ScrapedDocumentation) -> Self {
         Self {
             documentation,
-            embeddings: HashMap::new(),
+            
         }
     }
     
