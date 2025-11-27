@@ -1,0 +1,75 @@
+{
+  "base_url": "https://api.freshservice.com",
+  "endpoints": [
+    {
+      "name": "Create Ticket",
+      "description": "Create a new ticket in Freshservice",
+      "method": "POST",
+      "path": "/api/v2/tickets",
+      "parameters": [
+        {
+          "name": "subject",
+          "param_type": "string",
+          "description": "Subject of the ticket",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "description",
+          "param_type": "string",
+          "description": "HTML content of the ticket",
+          "required": true,
+          "default": null
+        },
+        {
+          "name": "email",
+          "param_type": "string",
+          "description": "Email address of the requester",
+          "required": true,
+          "default": null
+        }
+      ],
+      "curl_example": "curl -v -u yourapikey:X -H \"Content-Type: application/json\" -d '{\"subject\":\"Ticket Title\",\"description\":\"<h2>Ticket content</h2>\",\"email\":\"user@example.com\"}' -X POST \"https://domain.freshservice.com/api/v2/tickets\""
+    },
+    {
+      "name": "Get Ticket",
+      "description": "Retrieve a specific ticket by ID",
+      "method": "GET",
+      "path": "/api/v2/tickets/{id}",
+      "parameters": [
+        {
+          "name": "id",
+          "param_type": "integer",
+          "description": "Ticket ID",
+          "required": true,
+          "default": null
+        }
+      ],
+      "curl_example": "curl -v -u yourapikey:X -X GET \"https://domain.freshservice.com/api/v2/tickets/1\""
+    },
+    {
+      "name": "List Tickets",
+      "description": "Get a list of all tickets with optional filtering",
+      "method": "GET",
+      "path": "/api/v2/tickets",
+      "parameters": [
+        {
+          "name": "page",
+          "param_type": "integer",
+          "description": "Page number for pagination",
+          "required": false,
+          "default": "1"
+        },
+        {
+          "name": "per_page",
+          "param_type": "integer",
+          "description": "Number of records per page",
+          "required": false,
+          "default": "30"
+        }
+      ],
+      "curl_example": "curl -v -u yourapikey:X -X GET \"https://domain.freshservice.com/api/v2/tickets?page=1&per_page=30\""
+    }
+  ],
+  "scraped_at": "2025-11-27T19:25:14.768529018Z"
+}
