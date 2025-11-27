@@ -1,127 +1,121 @@
 use crate::models::{ApiEndpoint, ScrapedDocumentation};
 
-
 #[derive(Clone)]
 pub struct RagPipeline {
     documentation: ScrapedDocumentation,
-    
 }
 
 impl RagPipeline {
     pub fn new(documentation: ScrapedDocumentation) -> Self {
-        Self {
-            documentation,
-            
-        }
+        Self { documentation }
     }
     
     pub fn find_relevant_endpoints(&self, query: &str) -> Vec<(&ApiEndpoint, f32)> {
         let query_lower = query.to_lowercase();
-        let mut matches = Vec::new();
         
-        for endpoint in &self.documentation.endpoints {
-            let score = self.calculate_relevance_score(endpoint, &query_lower);
-            
-            if score > 0.1 {
-                matches.push((endpoint, score));
-            }
-        }
+        let mut matches: Vec<_> = self.documentation.endpoints
+            .iter()
+            .filter_map(|endpoint| {
+                let score = self.calculate_relevance_score(endpoint, &query_lower);
+                if score > 0.1 {
+                    Some((endpoint, score))
+                } else {
+                    None
+                }
+            })
+            .collect();
         
         // Sort by relevance score (descending)
-        matches.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+        matches.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
         
         matches
     }
     
-    fn calculate_relevance_score(&self, endpoint: &ApiEndpoint, query: &str) -> f32 {
-        let query_lower = query.to_lowercase();
+    fn calculate_relevance_score(&self, endpoint: &ApiEndpoint, query_lower: &str) -> f32 {
         let query_words: Vec<&str> = query_lower.split_whitespace().collect();
-        let mut score:f32 = 0.0;
+        let mut score = 0.0f32;
 
-        // Check name (highest weight)
+        // Check name (highest weight: 2.5 max)
         let name_lower = endpoint.name.to_lowercase();
-        if name_lower.contains(&query_lower) {
+        if name_lower.contains(query_lower) {
             score += 2.0;
         }
-        for word in &query_words {
-            if name_lower.contains(word) {
-                score += 0.5;
-            }
-        }
+        score += query_words.iter()
+            .filter(|word| name_lower.contains(*word))
+            .count() as f32 * 0.5;
 
-        // Check description
+        // Check description (1.3 max)
         let desc_lower = endpoint.description.to_lowercase();
-        if desc_lower.contains(&query_lower) {
+        if desc_lower.contains(query_lower) {
             score += 1.0;
         }
-        for word in &query_words {
-            if desc_lower.contains(word) {
-                score += 0.3;
-            }
-        }
+        score += query_words.iter()
+            .filter(|word| desc_lower.contains(*word))
+            .count() as f32 * 0.3;
 
-        // Check path/URL
-        let path_lower = endpoint.path.to_lowercase();
-        if path_lower.contains(&query_lower) {
+        // Check path (0.8 max)
+        if endpoint.path.to_lowercase().contains(query_lower) {
             score += 0.8;
         }
 
-        // Check parameters
+        // Check HTTP method match (0.8 max)
+        let method_lower = endpoint.method.to_lowercase();
+        if query_words.iter().any(|word| {
+            method_lower == *word || 
+            (method_lower == "get" && *word == "list") ||
+            (method_lower == "get" && *word == "view") ||
+            (method_lower == "get" && *word == "fetch")
+        }) {
+            score += 0.8;
+        }
+
+        // Check parameters (0.6 max)
         for param in &endpoint.parameters {
-            let param_name_lower = param.name.to_lowercase();
-            if param_name_lower.contains(&query_lower) {
+            if param.name.to_lowercase().contains(query_lower) {
                 score += 0.4;
+                break;
             }
-            if param.description.to_lowercase().contains(&query_lower) {
+            if param.description.to_lowercase().contains(query_lower) {
                 score += 0.2;
+                break;
             }
         }
 
-        // Check for specific keywords
-        if query_lower.contains("api") || query_lower.contains("freshservice") {
-            score += 0.5;
-        }
+        // Check for curl example (1.0 if query mentions curl)
         if query_lower.contains("curl") && endpoint.curl_example.is_some() {
             score += 1.0;
         }
-        if query_lower.contains("create") && name_lower.contains("create") {
-            score += 0.8;
-        }
-        if query_lower.contains("get") && name_lower.contains("get") {
-            score += 0.6;
-        }
-        if query_lower.contains("list") && name_lower.contains("list") {
-            score += 0.6;
-        }
-        if query_lower.contains("update") && name_lower.contains("update") {
-            score += 0.6;
-        }
-        if query_lower.contains("delete") && name_lower.contains("delete") {
-            score += 0.6;
-        }
 
-        // Normalize score to be between 0 and 1
-        score.min(5.0) / 5.0
+        // Normalize score to 0-1 range (max theoretical: ~7)
+        (score / 7.0).min(1.0)
     }
     
-    pub fn format_context(&self, matches: Vec<(&ApiEndpoint, f32)>) -> (String, f32) {
-        let mut context = String::new();
-        let mut overall_confidence: f32 = 0.0;
+    pub fn format_context(&self, matches: &[(&ApiEndpoint, f32)]) -> (String, f32) {
+        if matches.is_empty() {
+            return (String::from("No relevant endpoints found."), 0.0);
+        }
+
+        let mut context = String::with_capacity(matches.len() * 200);
+        let max_score = matches.first().map(|(_, s)| *s).unwrap_or(0.0);
         
-        for (endpoint, score) in matches {
-            context.push_str(&format!("[Relevance: {:.2}] ", score));
-            context.push_str(&format!("Endpoint: {} ({})\n", endpoint.name, endpoint.method));
-            context.push_str(&format!("Description: {}\n", endpoint.description));
-            context.push_str(&format!("Path: {}\n", endpoint.path));
+        for (endpoint, score) in matches.iter().take(5) {  // Limit to top 5
+            context.push_str(&format!(
+                "[Relevance: {:.2}] {} ({})\n\
+                 Description: {}\n\
+                 Path: {}\n",
+                score, endpoint.name, endpoint.method,
+                endpoint.description, endpoint.path
+            ));
             
             if !endpoint.parameters.is_empty() {
                 context.push_str("Parameters:\n");
                 for param in &endpoint.parameters {
-                    context.push_str(&format!("  - {} ({})", param.name, param.param_type));
-                    if param.required {
-                        context.push_str(" [Required]");
-                    }
-                    context.push_str(&format!(": {}\n", param.description));
+                    context.push_str(&format!(
+                        "  - {} ({}){}: {}\n",
+                        param.name, param.param_type,
+                        if param.required { " [Required]" } else { "" },
+                        param.description
+                    ));
                 }
             }
             
@@ -130,100 +124,122 @@ impl RagPipeline {
             }
             
             context.push_str("\n---\n\n");
-            
-            // Update overall confidence (weighted average)
-            overall_confidence = overall_confidence.max(score);
         }
         
-        (context, overall_confidence)
+        (context, max_score)
     }
     
-    // New method to calculate confidence based on query quality and context match
-    pub fn calculate_confidence(&self, query: &str, context: &str, matches: &[(&ApiEndpoint, f32)]) -> f32 {
+    pub fn calculate_confidence(&self, query: &str, matches: &[(&ApiEndpoint, f32)]) -> f32 {
         if matches.is_empty() {
-            return 0.1; // Very low confidence when no matches found
+            return 0.1;
         }
         
-        let max_match_score = matches.iter().map(|(_, score)| score).fold(0.0f32, |a: f32, &b| a.max(b));
-        
-        // Factor in query quality
+        let max_score = matches.first().map(|(_, s)| *s).unwrap_or(0.0);
         let query_quality = self.assess_query_quality(query);
         
-        // Factor in context richness
-        let context_richness = self.assess_context_richness(context);
+        // Weight: 70% match score, 30% query quality
+        let confidence = (max_score * 0.7) + (query_quality * 0.3);
         
-        // Combine factors
-        let confidence = (max_match_score * 0.6) + (query_quality * 0.2) + (context_richness * 0.2);
-        
-        // Ensure confidence is between 0.1 and 1.0
-        confidence.max(0.1).min(1.0)
+        confidence.clamp(0.1, 1.0)
     }
     
     fn assess_query_quality(&self, query: &str) -> f32 {
         let query_lower = query.to_lowercase();
+        let words: Vec<&str> = query_lower.split_whitespace().collect();
         
-        // Check if query contains API-related terms
-        let api_terms = ["api", "endpoint", "method", "curl", "request", "ticket", "create", "get", "list", "update", "delete"];
-        let mut term_count = 0;
-        
-        for term in &api_terms {
-            if query_lower.contains(term) {
-                term_count += 1;
-            }
+        if words.is_empty() {
+            return 0.1;
         }
         
-        // Check query length and specificity
-        let word_count = query_lower.split_whitespace().count();
+        // Check for API-related terms
+        let api_terms = [
+            "api", "endpoint", "method", "curl", "request", "response",
+            "ticket", "create", "get", "list", "update", "delete", "view",
+            "post", "put", "patch", "fetch", "retrieve"
+        ];
         
-        let specificity_score = if word_count >= 4 { 0.8 } else if word_count >= 2 { 0.5 } else { 0.2 };
-        let term_score = (term_count as f32 / api_terms.len() as f32).min(1.0);
+        let term_matches = api_terms.iter()
+            .filter(|term| query_lower.contains(*term))
+            .count();
         
-        (specificity_score * 0.6 + term_score * 0.4).min(1.0)
-    }
-    
-    fn assess_context_richness(&self, context: &str) -> f32 {
-        if context.is_empty() {
-            return 0.0;
-        }
+        let term_score = (term_matches as f32 / 3.0).min(1.0);  // Cap at 3 terms
         
-        let lines: Vec<&str> = context.lines().collect();
-        let non_empty_lines = lines.iter().filter(|line| !line.trim().is_empty()).count();
+        // Length/specificity score
+        let length_score = match words.len() {
+            0 => 0.1,
+            1 => 0.3,
+            2..=3 => 0.6,
+            _ => 0.9,
+        };
         
-        // Check for presence of key sections
-        let has_parameters = context.contains("Parameters:");
-        let has_curl_example = context.contains("cURL Example:");
-        let has_multiple_endpoints = context.matches("Endpoint:").count() > 1;
-        
-        let mut richness: f32 = 0.0;
-        
-        // Base score from line count
-        if non_empty_lines >= 10 {
-            richness += 0.4;
-        } else if non_empty_lines >= 5 {
-            richness += 0.2;
-        } else {
-            richness += 0.1;
-        }
-        
-        // Bonus for having parameters
-        if has_parameters {
-            richness += 0.3;
-        }
-        
-        // Bonus for having curl examples
-        if has_curl_example {
-            richness += 0.2;
-        }
-        
-        // Bonus for multiple endpoints
-        if has_multiple_endpoints {
-            richness += 0.1;
-        }
-        
-        richness.min(1.0)
+        // Combine: 60% length, 40% terms
+        (length_score * 0.6 + term_score * 0.4).min(1.0)
     }
     
     pub fn get_documentation(&self) -> &ScrapedDocumentation {
         &self.documentation
+    }
+    
+    // Helper method to get top N endpoints
+    pub fn get_top_matches(&self, query: &str, limit: usize) -> Vec<(&ApiEndpoint, f32)> {
+        let mut matches = self.find_relevant_endpoints(query);
+        matches.truncate(limit);
+        matches
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::models::{ApiParameter};
+    
+    #[test]
+    fn test_calculate_relevance_score() {
+        let pipeline = create_test_pipeline();
+        let endpoint = &pipeline.documentation.endpoints[0];
+        
+        // Should match "create ticket"
+        let score = pipeline.calculate_relevance_score(endpoint, "create ticket");
+        assert!(score > 0.5);
+        
+        // Should not match unrelated query
+        let score = pipeline.calculate_relevance_score(endpoint, "delete user");
+        assert!(score < 0.3);
+    }
+    
+    #[test]
+    fn test_find_relevant_endpoints() {
+        let pipeline = create_test_pipeline();
+        let matches = pipeline.find_relevant_endpoints("create ticket");
+        
+        assert!(!matches.is_empty());
+        assert!(matches[0].1 > 0.0);
+    }
+    
+    fn create_test_pipeline() -> RagPipeline {
+        let endpoints = vec![
+            ApiEndpoint {
+                name: "Create Ticket".to_string(),
+                description: "Create a new ticket".to_string(),
+                method: "POST".to_string(),
+                path: "/api/v2/tickets".to_string(),
+                parameters: vec![
+                    ApiParameter {
+                        name: "subject".to_string(),
+                        param_type: "string".to_string(),
+                        description: "Ticket subject".to_string(),
+                        required: true,
+                        default: None,
+                    }
+                ],
+                curl_example: Some("curl -X POST ...".to_string()),
+            }
+        ];
+        
+        RagPipeline::new(ScrapedDocumentation {
+            base_url: "https://api.freshservice.com".to_string(),
+            endpoints,
+            scraped_at: chrono::Utc::now(),
+        })
     }
 }

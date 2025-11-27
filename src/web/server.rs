@@ -16,7 +16,7 @@ struct QueryResponse {
     answer: String,
     sources: Vec<String>,
     confidence: f32,
-    explanation: String, // Add explanation for debugging
+    explanation: String, 
 }
 
 pub async fn run_server(port: u16) -> Result<()> {
@@ -47,7 +47,7 @@ pub async fn run_server(port: u16) -> Result<()> {
             async move {
                 // Process query using RAG pipeline
                 let matches = rag_pipeline.find_relevant_endpoints(&request.query);
-                let (context, max_score) = rag_pipeline.format_context(matches.clone());
+                let (context, max_score) = rag_pipeline.format_context(&matches);
                 
                 println!("Query: '{}'", request.query);
                 println!("Found {} relevant endpoints", matches.len());
@@ -55,7 +55,7 @@ pub async fn run_server(port: u16) -> Result<()> {
                 println!("Context length: {} characters", context.len());
                 
                 // Calculate dynamic confidence
-                let confidence = rag_pipeline.calculate_confidence(&request.query, &context, &matches);
+                let confidence = rag_pipeline.calculate_confidence(&request.query, &matches);
                 
                 let mut explanation = format!("Found {} relevant endpoints. ", matches.len());
                 if !matches.is_empty() {
