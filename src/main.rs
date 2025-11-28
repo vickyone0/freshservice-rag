@@ -40,7 +40,7 @@ async fn main() -> Result<()> {
             let scraper = scraper::FreshserviceScraper::new();
             let documentation = scraper.scrape_ticket_attributes().await?;
             
-            // Save scraped data
+            
             let output_path = output.unwrap_or_else(|| PathBuf::from("data/scraped/documentation.json"));
             if let Some(parent) = output_path.parent() {
                 std::fs::create_dir_all(parent)?;

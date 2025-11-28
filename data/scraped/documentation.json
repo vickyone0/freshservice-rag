@@ -983,5 +983,5 @@
       "curl_example": "1curl -v -u api_key:X -H \"Content-Type: application/json\" -X GET 'https://domain.freshservice.com/api/v2/tickets/1/csat_response'"
     }
   ],
-  "scraped_at": "2025-11-27T21:20:50.191113763Z"
+  "scraped_at": "2025-11-28T02:49:45.661543078Z"
 }
